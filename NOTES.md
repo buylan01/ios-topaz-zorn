@@ -472,3 +472,5 @@ What it took today (in order): 0058 HID services (Apple IOHIDFamily-1915 user cl
   - `11b231ec92d0e9cf59a2a4ede01400ba9572de49` — CI workflow
   - `a79f361f3f5631bc07d3307f77dbe83de3b3e494` — allow explicit blocked state
 - CI status has not yet been checked. Do not claim the workflow passed until a run result is fetched.
+
+- Validation result: GitHub Actions run #2 (`39935624650`) completed successfully on commit `a79f361f3f5631bc07d3307f77dbe83de3b3e494`. It validates the research JSON and Python syntax only; it is not an XNU build and not a device test. Run: https://github.com/buylan01/ios-topaz-zorn/actions/runs/39935624650
