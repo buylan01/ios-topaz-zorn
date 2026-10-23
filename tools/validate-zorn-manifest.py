@@ -4,7 +4,7 @@ import json
 import sys
 from pathlib import Path
 
-VALID_STATUS = {"observed", "candidate", "inferred", "unknown", "verified"}
+VALID_STATUS = {"observed", "candidate", "inferred", "unknown", "verified", "blocked"}
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "research/zorn/hardware-manifest.json"
 
