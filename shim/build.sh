@@ -3,6 +3,22 @@
 # v1/v2 images. The DTB and the vendor ramdisk come from vendor_boot of the
 # active slot; loader.c finds our payload behind the vendor ramdisk.
 set -euo pipefail
+
+# This source tree still contains topaz-only MMIO addresses, framebuffer and
+# boot-chain assumptions. Never let a requested zorn build silently reuse them.
+BOARD="${BOARD:-topaz}"
+case "$BOARD" in
+	topaz) ;;
+	zorn)
+		echo "error: zorn build blocked: board MMIO, memory map, boot handoff and console are not validated" >&2
+		exit 2
+		;;
+	*)
+		echo "error: unsupported BOARD='$BOARD' (expected topaz or zorn)" >&2
+		exit 2
+		;;
+esac
+
 cd "$(dirname "$0")"
 CC=aarch64-linux-gnu-gcc
 OBJCOPY=aarch64-linux-gnu-objcopy
