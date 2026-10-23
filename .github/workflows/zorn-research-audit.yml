@@ -29,4 +29,6 @@ jobs:
       - name: Validate research manifest
         run: python3 tools/validate-zorn-manifest.py
       - name: Check Python syntax
-        run: python3 -m py_compile tools/validate-zorn-manifest.py tools/dump-zorn-memory.py
+        run: python3 -m py_compile tools/validate-zorn-manifest.py tools/dump-zorn-memory.py tests/test_dump_zorn_memory.py
+      - name: Test FDT memory parser
+        run: python3 -m unittest discover -s tests -v
