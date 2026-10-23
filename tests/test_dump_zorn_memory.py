@@ -49,6 +49,8 @@ class FdtMemoryTests(unittest.TestCase):
         self.assertIn("no-map", secure["props"])
 
     def test_rejects_non_dtb(self):
-        with self.assertRaises(ValueError): FDT.parse("/definitely/not/a/dtb")
+        with tempfile.NamedTemporaryFile() as bad:
+            bad.write(b"not a dtb"); bad.flush()
+            with self.assertRaises(ValueError): FDT.parse(bad.name)
 
 if __name__ == "__main__": unittest.main()
