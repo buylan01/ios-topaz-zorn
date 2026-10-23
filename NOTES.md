@@ -425,3 +425,61 @@ What it took today (in order): 0058 HID services (Apple IOHIDFamily-1915 user cl
      cpu_init, before arm_vm_init.
   5. panic hook at top of panic_trap_to_debugger: va_copy + _doprnt(fmt, &copy, sweet_early_putc, 16).
   Verify with tools/xnu-cc.py (compile+symbols) and patch-order simulation before the single CI run.
+
+
+---
+
+## Agent handoff — Redmi K80 / zorn migration (2026-10-23)
+
+### Current branch and completed milestone
+- Working branch: `migration/zorn-sm8650-bringup` (based on `topaz`; upstream branch left untouched).
+- Imported prior read-only K80 research into:
+  - `research/zorn/PORTING_NOTES.md`
+  - `research/zorn/BOOT_CHAIN_RESEARCH.md`
+- Added SM8650 reference comparison:
+  - `research/zorn/SM8650_REFERENCE_AUDIT.md`
+- Commits:
+  - `f49bba021b99574e349b112624cb7e7da528ff75` — import porting notes
+  - `e3e891071c78cc0c52a0d71b1d931e2a0dd60373` — import boot-chain research
+  - `d5d32a8d5c87368bd9ce920f9817b0c27496aa3a` — SM8650 reference audit
+- No build or device boot has been run in this milestone. No device partitions have been written.
+
+### Reference-port findings
+- The strongest same-SoC reference is `tycykp/UniXNU-OnePlus-Ace5`, whose public README (dated 2026-10-23) reports iOS 16/Darwin 22 Hello/Setup, XNU CPU0, UFS reads, HFSX mount and USB CDC logging on OnePlus Ace 5 / SM8650. GPU execution, working Wi-Fi firmware readiness, audio playback, cellular and DRM remain incomplete/unverified.
+- UniXNU's PHY120 page reports UEFI menu and CI kernel builds but no completed device boot.
+- UniXNU index lists `jasper2863/UniXNU-giulia`, but the GitHub API fetch returned 404 during this audit; don't rely on details beyond the index's own status.
+- No public zorn-specific iOS/XNU port was identified in the reviewed sources; this is not proof that private/unindexed work does not exist.
+
+### Next concrete actions
+1. Audit `ios-topaz` CI/build and shim/payload/ADT interfaces against the zorn hardware evidence; don't copy UniXNU's board framework into this repo.
+2. Create a zorn hardware manifest with provenance/confidence tags and a reserved-memory normalization step; do not guess UFS or console register sequences.
+3. Add/validate a non-destructive CI build artifact path before writing platform code. The available host is Ubuntu 26.04; use GitHub Actions for macOS/Xcode-only XNU steps.
+4. Keep all device actions read-only until a reversible boot method and return-to-stock recovery are verified. Do not flash or erase partitions, and do not install an iOS root into userdata.
+
+### Evidence references
+- `research/zorn/SM8650_REFERENCE_AUDIT.md`
+- `research/zorn/PORTING_NOTES.md`
+- `research/zorn/BOOT_CHAIN_RESEARCH.md`
+
+
+### Follow-up milestone — zorn research guardrails (2026-10-23)
+- Added `research/zorn/hardware-manifest.json` with evidence-tagged K80 facts and explicit unknowns. UFS MMIO, timer frequency, boot MPIDR, translation granules, normalized RAM map, panel and framebuffer remain unset; SMP and storage writes remain disabled.
+- Added `tools/validate-zorn-manifest.py`, which fails closed if required sections are missing, unknown fields contain guessed values, the memory map is promoted without normalized regions, or destructive/safety flags are enabled.
+- Added `.github/workflows/zorn-research-audit.yml` for Ubuntu CI manifest validation and Python syntax checking. This is a static research gate, not an XNU build or boot test.
+- Follow-up commits:
+  - `c114e85b2cb1a68772c5a1e59ae3a16c8e7fdf3c` — hardware manifest
+  - `54b60acb0a6d248bab24e3f751d05634ea56eac8` — validator
+  - `11b231ec92d0e9cf59a2a4ede01400ba9572de49` — CI workflow
+  - `a79f361f3f5631bc07d3307f77dbe83de3b3e494` — allow explicit blocked state
+- CI status has not yet been checked. Do not claim the workflow passed until a run result is fetched.
+
+- Validation result: GitHub Actions run #2 (`39935624650`) completed successfully on commit `a79f361f3f5631bc07d3307f77dbe83de3b3e494`. It validates the research JSON and Python syntax only; it is not an XNU build and not a device test. Run: https://github.com/buylan01/ios-topaz-zorn/actions/runs/39935624650
+
+
+### Code tooling milestone — read-only FDT range inspection
+- Added `tools/dump-zorn-memory.py` to decode raw DTB memory and reserved-memory `reg` ranges, including `no-map` markers. It labels output as Linux-FDT evidence only; it does not claim the resulting ranges are usable RAM or an Apple Device Tree.
+- Added synthetic DTB unit tests in `tests/test_dump_zorn_memory.py`.
+- The validator and Python syntax checks passed. Parser tests passed on GitHub Actions run `39936199880` (commit `87fff84b544319d710027e80a6b2a3e3b530e759`): https://github.com/buylan01/ios-topaz-zorn/actions/runs/39936199880
+- The workflow now triggers on changes to the FDT tool and its test. The latest workflow run after that trigger change is still running as of this note.
+- Added `research/zorn/PORTING_CODE_MAP.md`, documenting exact topaz assumptions that must be split from board-specific code before zorn implementation.
+- Draft PR: https://github.com/buylan01/ios-topaz-zorn/pull/1
