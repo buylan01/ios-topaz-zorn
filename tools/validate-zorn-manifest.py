@@ -50,6 +50,17 @@ def main():
             fail(f"safety.{key} must remain false in this research-only milestone")
     if data["storage"].get("root_volume_write_allowed") is not False:
         fail("root-volume writes must remain disabled")
+    # The existing shim is topaz-specific. Keep the zorn target explicitly
+    # blocked until board MMIO, memory map and boot handoff are implemented.
+    build_script = ROOT / "shim/build.sh"
+    try:
+        build_text = build_script.read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(f"cannot read shim build guard: {exc}")
+    for guard in ('BOARD="${BOARD:-topaz}"', 'zorn build blocked', 'exit 2'):
+        if guard not in build_text:
+            fail(f"shim/build.sh is missing zorn safety guard: {guard}")
+
     walk(data)
     print("zorn hardware manifest: PASS (research-only; not a boot configuration)")
     print("SMP: disabled; memory allocator: blocked; storage writes: disabled; partition writes: none")
