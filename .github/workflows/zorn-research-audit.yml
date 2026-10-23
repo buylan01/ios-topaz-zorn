@@ -9,6 +9,10 @@ on:
       - "tools/validate-zorn-manifest.py"
       - "tools/dump-zorn-memory.py"
       - "tests/test_dump_zorn_memory.py"
+      - "shim/build.sh"
+      - "tools/dump-zorn-memory.py"
+      - "tests/test_dump_zorn_memory.py"
+      - "shim/build.sh"
       - ".github/workflows/zorn-research-audit.yml"
   pull_request:
     paths:
