@@ -474,3 +474,12 @@ What it took today (in order): 0058 HID services (Apple IOHIDFamily-1915 user cl
 - CI status has not yet been checked. Do not claim the workflow passed until a run result is fetched.
 
 - Validation result: GitHub Actions run #2 (`39935624650`) completed successfully on commit `a79f361f3f5631bc07d3307f77dbe83de3b3e494`. It validates the research JSON and Python syntax only; it is not an XNU build and not a device test. Run: https://github.com/buylan01/ios-topaz-zorn/actions/runs/39935624650
+
+
+### Code tooling milestone — read-only FDT range inspection
+- Added `tools/dump-zorn-memory.py` to decode raw DTB memory and reserved-memory `reg` ranges, including `no-map` markers. It labels output as Linux-FDT evidence only; it does not claim the resulting ranges are usable RAM or an Apple Device Tree.
+- Added synthetic DTB unit tests in `tests/test_dump_zorn_memory.py`.
+- The validator and Python syntax checks passed. Parser tests passed on GitHub Actions run `39936199880` (commit `87fff84b544319d710027e80a6b2a3e3b530e759`): https://github.com/buylan01/ios-topaz-zorn/actions/runs/39936199880
+- The workflow now triggers on changes to the FDT tool and its test. The latest workflow run after that trigger change is still running as of this note.
+- Added `research/zorn/PORTING_CODE_MAP.md`, documenting exact topaz assumptions that must be split from board-specific code before zorn implementation.
+- Draft PR: https://github.com/buylan01/ios-topaz-zorn/pull/1
