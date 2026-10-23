@@ -1,0 +1,32 @@
+name: zorn-research-audit
+
+on:
+  push:
+    branches:
+      - "migration/**"
+    paths:
+      - "research/zorn/**"
+      - "tools/validate-zorn-manifest.py"
+      - ".github/workflows/zorn-research-audit.yml"
+  pull_request:
+    paths:
+      - "research/zorn/**"
+      - "tools/validate-zorn-manifest.py"
+      - ".github/workflows/zorn-research-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate research manifest
+        run: python3 tools/validate-zorn-manifest.py
+      - name: Check Python syntax
+        run: python3 -m py_compile tools/validate-zorn-manifest.py
