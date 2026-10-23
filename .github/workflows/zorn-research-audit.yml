@@ -9,15 +9,17 @@ on:
       - "tools/validate-zorn-manifest.py"
       - "tools/dump-zorn-memory.py"
       - "tests/test_dump_zorn_memory.py"
-      - "shim/build.sh"
-      - "tools/dump-zorn-memory.py"
-      - "tests/test_dump_zorn_memory.py"
+      - "tests/test_zorn_build_guard.py"
       - "shim/build.sh"
       - ".github/workflows/zorn-research-audit.yml"
   pull_request:
     paths:
       - "research/zorn/**"
       - "tools/validate-zorn-manifest.py"
+      - "tools/dump-zorn-memory.py"
+      - "tests/test_dump_zorn_memory.py"
+      - "tests/test_zorn_build_guard.py"
+      - "shim/build.sh"
       - ".github/workflows/zorn-research-audit.yml"
   workflow_dispatch:
 
@@ -35,6 +37,6 @@ jobs:
       - name: Validate research manifest
         run: python3 tools/validate-zorn-manifest.py
       - name: Check Python syntax
-        run: python3 -m py_compile tools/validate-zorn-manifest.py tools/dump-zorn-memory.py tests/test_dump_zorn_memory.py
+        run: python3 -m py_compile tools/validate-zorn-manifest.py tools/dump-zorn-memory.py tests/test_dump_zorn_memory.py tests/test_zorn_build_guard.py
       - name: Test FDT memory parser
         run: python3 -m unittest discover -s tests -v
