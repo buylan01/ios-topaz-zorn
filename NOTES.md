@@ -425,3 +425,38 @@ What it took today (in order): 0058 HID services (Apple IOHIDFamily-1915 user cl
      cpu_init, before arm_vm_init.
   5. panic hook at top of panic_trap_to_debugger: va_copy + _doprnt(fmt, &copy, sweet_early_putc, 16).
   Verify with tools/xnu-cc.py (compile+symbols) and patch-order simulation before the single CI run.
+
+
+---
+
+## Agent handoff — Redmi K80 / zorn migration (2026-10-23)
+
+### Current branch and completed milestone
+- Working branch: `migration/zorn-sm8650-bringup` (based on `topaz`; upstream branch left untouched).
+- Imported prior read-only K80 research into:
+  - `research/zorn/PORTING_NOTES.md`
+  - `research/zorn/BOOT_CHAIN_RESEARCH.md`
+- Added SM8650 reference comparison:
+  - `research/zorn/SM8650_REFERENCE_AUDIT.md`
+- Commits:
+  - `f49bba021b99574e349b112624cb7e7da528ff75` — import porting notes
+  - `e3e891071c78cc0c52a0d71b1d931e2a0dd60373` — import boot-chain research
+  - `d5d32a8d5c87368bd9ce920f9817b0c27496aa3a` — SM8650 reference audit
+- No build or device boot has been run in this milestone. No device partitions have been written.
+
+### Reference-port findings
+- The strongest same-SoC reference is `tycykp/UniXNU-OnePlus-Ace5`, whose public README (dated 2026-10-23) reports iOS 16/Darwin 22 Hello/Setup, XNU CPU0, UFS reads, HFSX mount and USB CDC logging on OnePlus Ace 5 / SM8650. GPU execution, working Wi-Fi firmware readiness, audio playback, cellular and DRM remain incomplete/unverified.
+- UniXNU's PHY120 page reports UEFI menu and CI kernel builds but no completed device boot.
+- UniXNU index lists `jasper2863/UniXNU-giulia`, but the GitHub API fetch returned 404 during this audit; don't rely on details beyond the index's own status.
+- No public zorn-specific iOS/XNU port was identified in the reviewed sources; this is not proof that private/unindexed work does not exist.
+
+### Next concrete actions
+1. Audit `ios-topaz` CI/build and shim/payload/ADT interfaces against the zorn hardware evidence; don't copy UniXNU's board framework into this repo.
+2. Create a zorn hardware manifest with provenance/confidence tags and a reserved-memory normalization step; do not guess UFS or console register sequences.
+3. Add/validate a non-destructive CI build artifact path before writing platform code. The available host is Ubuntu 26.04; use GitHub Actions for macOS/Xcode-only XNU steps.
+4. Keep all device actions read-only until a reversible boot method and return-to-stock recovery are verified. Do not flash or erase partitions, and do not install an iOS root into userdata.
+
+### Evidence references
+- `research/zorn/SM8650_REFERENCE_AUDIT.md`
+- `research/zorn/PORTING_NOTES.md`
+- `research/zorn/BOOT_CHAIN_RESEARCH.md`
