@@ -460,3 +460,15 @@ What it took today (in order): 0058 HID services (Apple IOHIDFamily-1915 user cl
 - `research/zorn/SM8650_REFERENCE_AUDIT.md`
 - `research/zorn/PORTING_NOTES.md`
 - `research/zorn/BOOT_CHAIN_RESEARCH.md`
+
+
+### Follow-up milestone — zorn research guardrails (2026-10-23)
+- Added `research/zorn/hardware-manifest.json` with evidence-tagged K80 facts and explicit unknowns. UFS MMIO, timer frequency, boot MPIDR, translation granules, normalized RAM map, panel and framebuffer remain unset; SMP and storage writes remain disabled.
+- Added `tools/validate-zorn-manifest.py`, which fails closed if required sections are missing, unknown fields contain guessed values, the memory map is promoted without normalized regions, or destructive/safety flags are enabled.
+- Added `.github/workflows/zorn-research-audit.yml` for Ubuntu CI manifest validation and Python syntax checking. This is a static research gate, not an XNU build or boot test.
+- Follow-up commits:
+  - `c114e85b2cb1a68772c5a1e59ae3a16c8e7fdf3c` — hardware manifest
+  - `54b60acb0a6d248bab24e3f751d05634ea56eac8` — validator
+  - `11b231ec92d0e9cf59a2a4ede01400ba9572de49` — CI workflow
+  - `a79f361f3f5631bc07d3307f77dbe83de3b3e494` — allow explicit blocked state
+- CI status has not yet been checked. Do not claim the workflow passed until a run result is fetched.
