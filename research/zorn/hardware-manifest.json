@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "device": {
+    "name": "Redmi K80",
+    "model": "24117RK2CC",
+    "codename": "zorn",
+    "soc": "Qualcomm SM8650",
+    "platform": "pineapple",
+    "status": "observed",
+    "evidence": "Read-only runtime Android properties and /sys/firmware/fdt; see PORTING_NOTES.md and BOOT_CHAIN_RESEARCH.md"
+  },
+  "boot_chain": {
+    "android_boot_header": {
+      "value": 4,
+      "status": "observed",
+      "evidence": "Offline inspection of extracted slot-A boot images; does not describe an XNU image ABI"
+    },
+    "fastboot_ram_boot": {
+      "value": null,
+      "status": "unknown",
+      "evidence": "Must be explicitly tested/verified for this model before any custom image boot"
+    },
+    "uefi_partition_role": {
+      "value": null,
+      "status": "unknown",
+      "evidence": "uefi_a/b existence does not prove role, compatibility, or safe write target"
+    }
+  },
+  "cpu": {
+    "topology": [
+      {"cluster": "efficiency", "cores": 2, "microarchitecture": "Cortex-A520", "status": "observed"},
+      {"cluster": "performance", "cores": 5, "microarchitecture": "Cortex-A720", "status": "observed"},
+      {"cluster": "prime", "cores": 1, "microarchitecture": "Cortex-X4", "status": "observed"}
+    ],
+    "boot_mpidr": {
+      "value": null,
+      "status": "unknown",
+      "evidence": "Must be read on the actual boot core by a diagnostic shim; do not infer from Linux CPU numbering"
+    },
+    "translation_granules": {
+      "value": null,
+      "status": "unknown",
+      "evidence": "Read ID_AA64MMFR0_EL1 on each core before selecting XNU page-table assumptions"
+    },
+    "smp_enabled": false
+  },
+  "interrupts": {
+    "gic_version": {"value": 3, "status": "observed", "evidence": "Runtime Linux FDT compatible arm,gic-v3"},
+    "gicd_base": {"value": "0x17100000", "status": "observed", "evidence": "Runtime Linux FDT; mapping/access not yet validated from shim/XNU"},
+    "gicr_base": {"value": "0x17180000", "status": "observed", "evidence": "Runtime Linux FDT; redistributor affinity/wake state not yet validated"},
+    "gic_its_base": {"value": "0x17140000", "status": "observed", "evidence": "Runtime Linux FDT; not needed for first CPU0 milestone"},
+    "timer_frequency_hz": {"value": null, "status": "unknown", "evidence": "Must be measured/read from architectural timer registers; do not reuse topaz's 19.2 MHz"}
+  },
+  "debug": {
+    "uart_candidate_base": {"value": "0x0089c000", "status": "candidate", "evidence": "Runtime FDT candidate only; console=ttynull and physical routing/access unverified"},
+    "usb_cdc": {"value": null, "status": "unknown", "evidence": "Must be implemented and tested for zorn; giulia's USB CDC code is not a board-independent drop-in"}
+  },
+  "memory": {
+    "normalized_regions": [],
+    "status": "blocked",
+    "evidence": "Runtime FDT has multiple RAM banks and reserved-memory/no-map regions. Normalize full 64-bit ranges before enabling an allocator."
+  },
+  "storage": {
+    "controller": "UFS",
+    "mmio_base": {"value": null, "status": "unknown", "evidence": "Do not copy topaz's 0x04804000 or giulia's board values; identify zorn controller and sequence from runtime FDT/vendor sources"},
+    "read_only_probe": false,
+    "root_volume_write_allowed": false
+  },
+  "display": {
+    "panel_resolution": {"value": null, "status": "unknown", "evidence": "Panel/DSI/MDP details must come from zorn-specific sources and runtime evidence"},
+    "framebuffer_base": {"value": null, "status": "unknown", "evidence": "Do not copy topaz's framebuffer address"}
+  },
+  "safety": {
+    "partition_writes_performed": false,
+    "userdata_modified": false,
+    "destructive_install_allowed": false,
+    "policy": "Research and static validation only until reversible RAM boot and a verified return-to-stock plan exist."
+  }
+}
